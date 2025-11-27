@@ -450,55 +450,43 @@
       }, 4000);
     }
 
-    async function sendDiscordWebhook(user, action = 'added') {
-      try {
-        const embed = {
-          title: action === 'added' ? '✅ User Whitelisted' : '🗑️ User Removed',
-          color: action === 'added' ? 0x10b981 : 0xef4444,
-          fields: [
-            {
-              name: '👤 Roblox Username',
-              value: user.robloxUsername,
-              inline: true
-            },
-            {
-              name: '💬 Discord ID',
-              value: user.discordId || 'Not provided',
-              inline: true
-            },
-            {
-              name: '📅 Date',
-              value: new Date(user.addedDate).toLocaleString(),
-              inline: false
-            },
-            {
-              name: '📊 Total Users',
-              value: whitelist.users.length.toString(),
-              inline: true
-            }
-          ],
-          thumbnail: {
-            url: 'https://i.ibb.co/Z6STVDYT/New-Project.webp'
+async function sendDiscordWebhook(user) {
+  try {
+    const payload = {
+      content: `Hey <@${user.discordId || "000000000000000000"}>! You have been successfully whitelisted!`,
+      embeds: [
+        {
+          description: `**Your Roblox account is now whitelisted.\nThank you for choosing our FGP!\nEnjoy grinding and earning more Robux.**\n**Rblx Username:** ${user.robloxUsername}`,
+          color: 4390686,
+          author: {
+            name: "X-FGP WHITELISTER",
+            url: "https://media.discordapp.net/attachments/1385041743111782490/1433392279607050280/static.png",
+            icon_url: "https://cdn-icons-png.flaticon.com/512/7653/7653930.png"
           },
           footer: {
-            text: 'X-PAID FGP Whitelist System'
+            text: "Powered By: X - FGP",
+            icon_url: "https://media.discordapp.net/attachments/1385041743111782490/1433392279607050280/static.png"
           },
-          timestamp: new Date().toISOString()
-        };
+          timestamp: new Date().toISOString(),
+          thumbnail: {
+            url: "https://media.discordapp.net/attachments/1385041743111782490/1443543391760551998/New_Project_2.png?ex=6929740c&is=6928228c&hm=69819b3b9ffaed2c8f306ef67744c2263ea2d994388c55869bd55437d1613caa&=&format=webp&quality=lossless"
+          }
+        }
+      ]
+    };
 
-        await fetch(DISCORD_WEBHOOK_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            embeds: [embed]
-          })
-        });
-      } catch (error) {
-        console.error('Discord webhook error:', error);
-      }
-    }
+    await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+  } catch (err) {
+    console.error("Webhook Error:", err);
+  }
+}
+
+
 
     async function syncToGitHub() {
       if (!config.token || !config.repo) {
